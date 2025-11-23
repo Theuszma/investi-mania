@@ -2,14 +2,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { useTheme } from '@/components/ThemeProvider';
+import { LogOut, Moon, Sun } from 'lucide-react';
 
 export default function Settings() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -43,6 +46,25 @@ export default function Settings() {
 
       <Card className="glassmorphism">
         <CardHeader>
+          <CardTitle>Appearance</CardTitle>
+          <CardDescription>Customize how TradeArena looks</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {theme === 'dark' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+              <div>
+                <p className="font-medium">Dark Mode</p>
+                <p className="text-sm text-muted-foreground">Toggle between light and dark theme</p>
+              </div>
+            </div>
+            <Switch checked={theme === 'dark'} onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="glassmorphism">
+        <CardHeader>
           <CardTitle>Notifications</CardTitle>
           <CardDescription>Configure how you receive updates</CardDescription>
         </CardHeader>
@@ -52,7 +74,14 @@ export default function Settings() {
               <p className="font-medium">Email Notifications</p>
               <p className="text-sm text-muted-foreground">Receive updates about your leagues</p>
             </div>
-            <Button variant="outline">Configure</Button>
+            <Switch />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Trade Alerts</p>
+              <p className="text-sm text-muted-foreground">Get notified about significant price movements</p>
+            </div>
+            <Switch />
           </div>
         </CardContent>
       </Card>
