@@ -1,4 +1,4 @@
-import { LayoutDashboard, Trophy, TrendingUp, Briefcase, Users, Settings } from 'lucide-react';
+import { LayoutDashboard, Trophy, TrendingUp, Briefcase, Users, Settings, BarChart3 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import {
@@ -13,12 +13,19 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
-const menuItems = [
+const mainItems = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-  { title: 'My Leagues', url: '/leagues', icon: Trophy },
   { title: 'Market', url: '/market', icon: TrendingUp },
   { title: 'My Portfolio', url: '/portfolio', icon: Briefcase },
-  { title: 'Leaderboard', url: '/leaderboard', icon: Users },
+];
+
+const socialItems = [
+  { title: 'My Leagues', url: '/leagues', icon: Trophy },
+  { title: 'Friends', url: '/friends', icon: Users },
+  { title: 'Leaderboard', url: '/leaderboard', icon: BarChart3 },
+];
+
+const settingsItems = [
   { title: 'Settings', url: '/settings', icon: Settings },
 ];
 
@@ -34,11 +41,57 @@ export function AppSidebar() {
           <h2 className={`text-xl font-bold text-primary ${!open && 'hidden'}`}>TradeArena</h2>
           {!open && <TrendingUp className="h-6 w-6 text-primary" />}
         </div>
+        
         <SidebarGroup>
-          <SidebarGroupLabel className={!open ? 'hidden' : ''}>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className={!open ? 'hidden' : ''}>Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {mainItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to={item.url} 
+                      end 
+                      className="hover:bg-accent/50"
+                      activeClassName="bg-primary/20 text-primary font-medium border-l-2 border-primary"
+                    >
+                      <item.icon className="h-4 w-4" />
+                      {open && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={!open ? 'hidden' : ''}>Social & Competition</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {socialItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to={item.url} 
+                      end 
+                      className="hover:bg-accent/50"
+                      activeClassName="bg-primary/20 text-primary font-medium border-l-2 border-primary"
+                    >
+                      <item.icon className="h-4 w-4" />
+                      {open && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {settingsItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink 
