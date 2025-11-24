@@ -15,6 +15,8 @@ import Leaderboard from "./pages/Leaderboard";
 import Settings from "./pages/Settings";
 import Friends from "./pages/Friends";
 import FriendProfile from "./pages/FriendProfile";
+import Profile from "./pages/Profile";
+import LeagueDetails from "./pages/LeagueDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -68,10 +70,12 @@ const App = () => (
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/market" element={<ProtectedRoute><Market /></ProtectedRoute>} />
             <Route path="/leagues" element={<ProtectedRoute><MyLeagues /></ProtectedRoute>} />
+            <Route path="/leagues/:leagueId" element={<ProtectedRoute><LeagueDetails /></ProtectedRoute>} />
             <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
             <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
             <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
             <Route path="/friends/:userId" element={<ProtectedRoute><FriendProfile /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>

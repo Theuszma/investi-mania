@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Users, Calendar, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const leagues = [
   {
@@ -34,6 +35,8 @@ const leagues = [
 ];
 
 export default function MyLeagues() {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -49,7 +52,11 @@ export default function MyLeagues() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {leagues.map((league) => (
-          <Card key={league.id} className="glassmorphism hover:border-primary/50 transition-colors cursor-pointer">
+          <Card
+            key={league.id}
+            className="glassmorphism hover:border-primary/50 transition-colors cursor-pointer"
+            onClick={() => navigate(`/leagues/${league.id}`)}
+          >
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
