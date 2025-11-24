@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserPlus, User, Search, Check, X, TrendingUp, TrendingDown } from 'lucide-react';
+import { UserPlus, User, Search, Check, X, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useFriendSearch } from '@/hooks/useFriendSearch';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 // Mock data for demonstration
 const mockFriends = [
@@ -21,10 +24,30 @@ const mockPendingRequests = [
 
 export default function Friends() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { results, loading, searchUsers, sendFriendRequest } = useFriendSearch();
+
+  useEffect(() => {
+    if (searchQuery) {
+      const timer = setTimeout(() => {
+        searchUsers(searchQuery);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [searchQuery]);
 
   const handleViewProfile = (userId: string) => {
     navigate(`/friends/${userId}`);
+  };
+
+  const handleSendRequest = async (userId: string) => {
+    const success = await sendFriendRequest(userId);
+    if (success) {
+      setSearchQuery('');
+      setShowSearch(false);
+    }
   };
 
   return (
@@ -34,25 +57,53 @@ export default function Friends() {
           <h1 className="text-3xl font-bold mb-2">Friends</h1>
           <p className="text-muted-foreground">Connect with other traders and compare performance</p>
         </div>
-        <Button className="gap-2">
+        <Button className="gap-2" onClick={() => setShowSearch(!showSearch)}>
           <UserPlus className="h-4 w-4" />
           Add Friend
         </Button>
       </div>
 
-      <Card className="glassmorphism">
-        <CardContent className="pt-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search friends by username..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </CardContent>
-      </Card>
+      {showSearch && (
+        <Card className="glassmorphism">
+          <CardContent className="pt-6">
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search users by username..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            {loading && (
+              <div className="flex justify-center py-4">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            )}
+            {results.length > 0 && (
+              <div className="space-y-2">
+                {results.filter(r => r.id !== user?.id).map((result) => (
+                  <div key={result.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={result.avatar_url || undefined} />
+                        <AvatarFallback className="bg-primary/20 text-primary">
+                          <User className="h-4 w-4" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium">{result.username}</span>
+                    </div>
+                    <Button size="sm" onClick={() => handleSendRequest(result.id)}>
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Add
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue="friends" className="space-y-6">
         <TabsList className="grid w-full grid-cols-2">
